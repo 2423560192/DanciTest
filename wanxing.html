@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>英语完形填空互动题库</title>
+  <!-- 引入腾讯云开发SDK -->
+  <script src="//static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
 
@@ -365,7 +367,7 @@
     
     <!-- 题目内容将在这里动态生成 -->
     
-  </div>
+    </div>
 
   <div class="feedback" id="feedback">太棒了！继续加油！</div>
   
@@ -377,8 +379,10 @@
     <button id="enable-word-hints">启用单词提示</button>
     <button id="disable-word-hints">禁用单词提示</button>
     <button id="edit-json">编辑JSON</button>
-  </div>
-  
+    <button id="save-to-cloud">保存到云端</button>
+    <button id="load-from-cloud">从云端加载</button>
+    </div>
+
   <div class="json-editor">
     <div class="json-editor-content">
       <h2>编辑题目 JSON</h2>
@@ -386,11 +390,16 @@
       <div class="json-editor-buttons">
         <button class="cancel-btn">取消</button>
         <button class="apply-btn">应用</button>
-      </div>
+    </div>
     </div>
   </div>
 
   <script>
+    // 初始化腾讯云开发
+    const app = cloudbase.init({
+      env: "cloud1-6giixk06e57eaefb" // 您的环境ID
+    });
+
     // 默认题目数据
     const defaultExercises = [
       {
@@ -440,6 +449,81 @@
     
     // 保存当前题目数据
     let currentExercises = JSON.parse(localStorage.getItem('exercises')) || defaultExercises;
+    
+    // 云数据库引用
+    const db = app.database();
+    const exercisesCollection = db.collection("exercises");
+
+    // 保存数据到云端函数
+    async function saveToCloud() {
+      try {
+        // 尝试用匿名登录
+        if (!app.auth().hasLoginState()) {
+          await app.auth().anonymousAuthProvider().signIn();
+        }
+        
+        // 获取或创建默认文档
+        const queryResult = await exercisesCollection.where({
+          type: "default"
+        }).get();
+        
+        if (queryResult.data.length === 0) {
+          // 创建新文档
+          await exercisesCollection.add({
+            type: "default",
+            exercises: currentExercises,
+            updatedAt: new Date()
+          });
+        } else {
+          // 更新已有文档
+          await exercisesCollection.doc(queryResult.data[0]._id).update({
+            exercises: currentExercises,
+            updatedAt: new Date()
+          });
+        }
+        
+        showFeedback("成功保存到云端！");
+      } catch (error) {
+        console.error("保存到云端失败:", error);
+        showFeedback("保存到云端失败，请查看控制台");
+      }
+    }
+    
+    // 从云端加载数据函数
+    async function loadFromCloud() {
+      try {
+        // 尝试用匿名登录
+        if (!app.auth().hasLoginState()) {
+          await app.auth().anonymousAuthProvider().signIn();
+        }
+        
+        // 获取默认文档
+        const queryResult = await exercisesCollection.where({
+          type: "default"
+        }).get();
+        
+        if (queryResult.data.length === 0) {
+          showFeedback("云端没有保存的数据");
+          return;
+        }
+        
+        // 更新本地数据
+        currentExercises = queryResult.data[0].exercises;
+        localStorage.setItem('exercises', JSON.stringify(currentExercises));
+        
+        // 重新生成练习
+        generateExercises(currentExercises);
+        
+        showFeedback("成功从云端加载数据！");
+      } catch (error) {
+        console.error("从云端加载失败:", error);
+        showFeedback("从云端加载失败，请查看控制台");
+      }
+    }
+    
+    // 绑定云同步按钮事件
+    document.getElementById('save-to-cloud').addEventListener('click', saveToCloud);
+    document.getElementById('load-from-cloud').addEventListener('click', loadFromCloud);
     
     // 生成填空题
     function generateExercises(exercises) {

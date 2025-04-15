@@ -1,0 +1,29 @@
+services:
+  # 使用Docker配置
+  - type: web
+    name: english-words-exercise
+    env: docker
+    repo:
+      # 使用Dockerfile构建
+      branch: main # 或者您的分支名
+    # 路由配置
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /wanxing.html
+    # 环境配置
+    envVars:
+      - key: RENDER_EXTERNAL_URL
+        value: ""
+      - key: RENDER_EXTERNAL_HOSTNAME
+        value: ""
+    # 自动部署配置
+    autoDeploy: true
+    # 健康检查
+    healthCheckPath: /wanxing.html
+    # 自定义域名 (可选，取消注释并替换为您的域名)
+    # domains:
+    #   - example.com
+
+# 全局配置
+plan: free
