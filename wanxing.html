@@ -85,21 +85,43 @@
       display: inline-block;
       position: relative;
       vertical-align: middle;
+      margin: 0 4px;
     }
 
     .blank-box {
-      display: inline-block;
-      width: 100px;
-      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: auto;
+      min-width: 80px;
+      max-width: 120px;
+      height: 36px;
       background-color: #fff8e1;
       border: 1px solid #ffcc00;
       border-radius: 5px;
-      text-align: center;
-      line-height: 40px;
-      margin: 0 5px;
+      margin: 0;
+      padding: 0 5px;
       font-size: 18px;
       color: #333;
       position: relative;
+    }
+    
+    .blank-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.4;
+      transition: opacity 0.3s;
+    }
+
+    .blank-box:focus-within .blank-content {
+      opacity: 0;
     }
 
     .blank-hint {
@@ -120,6 +142,23 @@
       font-family: 'Comic Neue', cursive;
       color: #333;
       outline: none;
+      z-index: 2;
+      font-weight: bold;
+    }
+    
+    .first-letter {
+      color: #4a90e2;
+      font-weight: bold;
+      opacity: 0.8;
+    }
+    
+    .underline {
+      display: inline-block;
+      width: 10px;
+      height: 2px;
+      background-color: #999;
+      margin: 0 1px;
+      opacity: 0.6;
     }
 
     .blank-box.correct {
@@ -160,6 +199,13 @@
       color: #ff6b6b;
       font-weight: bold;
       border-bottom: 2px dotted #ff6b6b;
+      padding: 0 3px;
+    }
+
+    .hint-blank {
+      color: #ff6b6b;
+      font-weight: bold;
+      border-bottom: 2px solid #ff6b6b;
       padding: 0 3px;
     }
 
@@ -250,68 +296,75 @@
     .teacher-panel button:hover {
       background-color: #3a7bc8;
     }
+    
+    .json-editor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    
+    .json-editor.active {
+      display: flex;
+    }
+    
+    .json-editor-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 800px;
+      max-height: 80vh;
+      overflow: auto;
+    }
+    
+    .json-editor textarea {
+      width: 100%;
+      height: 300px;
+      font-family: monospace;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    
+    .json-editor-buttons {
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .json-editor-buttons button {
+      margin-left: 10px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    .json-editor-buttons .apply-btn {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .json-editor-buttons .cancel-btn {
+      background-color: #f44336;
+      color: white;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div class="container" id="exercise-container">
     <h1>🌟 英语完形填空互动练习 🌟</h1>
-
-    <div class="sentence">
-      One day, I <span class="word" data-meaning="找到">found<span class="word-tooltip">找到</span></span> a wallet on the ground. 
-      <span class="word" data-meaning="我">I<span class="word-tooltip">我</span></span> picked it up and looked 
-      <span class="word" data-meaning="周围">around<span class="word-tooltip">周围</span></span>.
-      <div class="translation">有一天，我在地上捡到了一个钱包。我捡起它，看了看周围。</div>
-      <div class="hint-translation">有一天，我<span class="hint-word">f___</span>到了一个钱包。<span class="hint-word">我</span>捡起它，看了看<span class="hint-word">周围</span>。</div>
-      <div class="button-group">
-        <button class="hint-btn">提示翻译</button>
-        <button class="translate-btn">完整翻译</button>
-      </div>
-    </div>
-
-    <div class="sentence">
-      I decided to 
-      <div class="blank-container">
-        <div class="blank-box">
-          <input type="text" class="blank-input" id="word1" placeholder="r____">
-        </div>
-      </div>
-      it to the 
-      <span class="word" data-meaning="警察局">police station<span class="word-tooltip">警察局</span></span>.
-      <div class="translation">我决定把它交给警察局。</div>
-      <div class="hint-translation">我决定把它<span class="hint-word">r___</span>到警察局。</div>
-      <div class="button-group">
-        <button class="hint-btn">提示翻译</button>
-        <button class="translate-btn">完整翻译</button>
-      </div>
-    </div>
-
-    <div class="sentence">
-      The police officer was very <span class="word" data-meaning="感激的">grateful<span class="word-tooltip">感激的</span></span> and praised me.
-      <div class="translation">警察非常感激并称赞了我。</div>
-      <div class="hint-translation">警察非常<span class="hint-word">g___</span>并称赞了我。</div>
-      <div class="button-group">
-        <button class="hint-btn">提示翻译</button>
-        <button class="translate-btn">完整翻译</button>
-      </div>
-    </div>
-
-    <div class="sentence">
-      It made me feel 
-      <div class="blank-container">
-        <div class="blank-box">
-          <input type="text" class="blank-input" id="word2" placeholder="p____">
-        </div>
-      </div>
-      of myself.
-      <div class="translation">这让我感到很自豪。</div>
-      <div class="hint-translation">这让我感到很<span class="hint-word">p___</span>。</div>
-      <div class="button-group">
-        <button class="hint-btn">提示翻译</button>
-        <button class="translate-btn">完整翻译</button>
-      </div>
-    </div>
-
+    
+    <!-- 题目内容将在这里动态生成 -->
+    
   </div>
 
   <div class="feedback" id="feedback">太棒了！继续加油！</div>
@@ -323,9 +376,220 @@
     <button id="show-all-hints">显示所有提示翻译</button>
     <button id="enable-word-hints">启用单词提示</button>
     <button id="disable-word-hints">禁用单词提示</button>
+    <button id="edit-json">编辑JSON</button>
+  </div>
+  
+  <div class="json-editor">
+    <div class="json-editor-content">
+      <h2>编辑题目 JSON</h2>
+      <textarea id="json-content"></textarea>
+      <div class="json-editor-buttons">
+        <button class="cancel-btn">取消</button>
+        <button class="apply-btn">应用</button>
+      </div>
+    </div>
   </div>
 
   <script>
+    // 默认题目数据
+    const defaultExercises = [
+      {
+        "id": 1,
+        "english": "One day, I [found] a wallet on the ground. {I} picked it up and looked {around}.",
+        "translation": "有一天，我在地上捡到了一个钱包。我捡起它，看了看周围。",
+        "hint_translation": "有一天，我[f___]到了一个钱包。{我}捡起它，看了看{周围}。",
+        "words": [
+          { "word": "found", "meaning": "找到", "isBlank": true, "answer": "found" },
+          { "word": "I", "meaning": "我", "isBlank": false },
+          { "word": "around", "meaning": "周围", "isBlank": false }
+        ]
+      },
+      {
+        "id": 2,
+        "english": "{I} decided to [return] it to the {police station}.",
+        "translation": "我决定把它交给警察局。",
+        "hint_translation": "{我}决定把它[r___]到{警察局}。",
+        "words": [
+          { "word": "I", "meaning": "我", "isBlank": false },
+          { "word": "return", "meaning": "归还", "isBlank": true, "answer": "return" },
+          { "word": "police station", "meaning": "警察局", "isBlank": false }
+        ]
+      },
+      {
+        "id": 3,
+        "english": "The {police} officer was very {grateful} and [praised] me.",
+        "translation": "警察非常感激并称赞了我。",
+        "hint_translation": "{警察}非常{感激的}并[p___]了我。",
+        "words": [
+          { "word": "police", "meaning": "警察", "isBlank": false },
+          { "word": "grateful", "meaning": "感激的", "isBlank": false },
+          { "word": "praised", "meaning": "称赞", "isBlank": true, "answer": "praised" }
+        ]
+      },
+      {
+        "id": 4,
+        "english": "{It} made me feel [proud] of myself.",
+        "translation": "这让我感到很自豪。",
+        "hint_translation": "{它}让我感到很[p___]。",
+        "words": [
+          { "word": "It", "meaning": "它", "isBlank": false },
+          { "word": "proud", "meaning": "自豪的", "isBlank": true, "answer": "proud" }
+        ]
+      }
+    ];
+    
+    // 保存当前题目数据
+    let currentExercises = JSON.parse(localStorage.getItem('exercises')) || defaultExercises;
+    
+    // 生成填空题
+    function generateExercises(exercises) {
+      const container = document.getElementById('exercise-container');
+      // 保留标题
+      const title = container.querySelector('h1');
+      container.innerHTML = '';
+      container.appendChild(title);
+      
+      exercises.forEach((exercise, index) => {
+        const sentenceDiv = document.createElement('div');
+        sentenceDiv.className = 'sentence';
+        
+        // 处理英文句子
+        let englishText = exercise.english;
+        const wordRegex = /\{([^}]+)\}|\[([^\]]+)\]/g;
+        let match;
+        let lastIndex = 0;
+        let englishHtml = '';
+        let blankCounter = 0;
+        
+        while ((match = wordRegex.exec(exercise.english)) !== null) {
+          // 添加匹配前的文本
+          englishHtml += englishText.substring(lastIndex, match.index);
+          
+          // 检查是否为填空词 [word] 或 重点词 {word}
+          if (match[1]) { // 重点词 {word}
+            const word = match[1];
+            const wordInfo = exercise.words.find(w => w.word === word);
+            englishHtml += `<span class="word" data-meaning="${wordInfo.meaning}">${word}<span class="word-tooltip">${wordInfo.meaning}</span></span>`;
+          } else if (match[2]) { // 填空词 [word]
+            const word = match[2];
+            const wordInfo = exercise.words.find(w => w.word === word);
+            const inputId = `blank-${index}-${blankCounter}`;
+            blankCounter++;
+            
+            // 生成填空框，只显示首字母
+            englishHtml += `
+              <div class="blank-container">
+                <div class="blank-box">
+                  <div class="blank-content">
+                    <span class="first-letter">${word[0]}</span>${'<span class="underline"></span>'.repeat(word.length - 1)}
+                  </div>
+                  <input type="text" class="blank-input" id="${inputId}" placeholder="" data-answer="${wordInfo.answer}">
+                </div>
+              </div>
+            `;
+          }
+          
+          lastIndex = match.index + match[0].length;
+        }
+        
+        // 添加最后一部分文本
+        englishHtml += englishText.substring(lastIndex);
+        
+        // 处理中文翻译
+        const translationDiv = document.createElement('div');
+        translationDiv.className = 'translation';
+        translationDiv.textContent = exercise.translation;
+        
+        // 处理提示翻译
+        const hintTranslationDiv = document.createElement('div');
+        hintTranslationDiv.className = 'hint-translation';
+        
+        let hintText = exercise.hint_translation;
+        const hintRegex = /\{([^}]+)\}|\[([^\]]+)\]/g;
+        match = null;
+        lastIndex = 0;
+        let hintHtml = '';
+        
+        while ((match = hintRegex.exec(exercise.hint_translation)) !== null) {
+          // 添加匹配前的文本
+          hintHtml += hintText.substring(lastIndex, match.index);
+          
+          // 检查是否为填空词 [word] 或 重点词 {word}
+          if (match[1]) { // 重点词 {word}
+            hintHtml += `<span class="hint-word">${match[1]}</span>`;
+          } else if (match[2]) { // 填空词 [word]
+            hintHtml += `<span class="hint-blank">${match[2]}</span>`;
+          }
+          
+          lastIndex = match.index + match[0].length;
+        }
+        
+        // 添加最后一部分文本
+        hintHtml += hintText.substring(lastIndex);
+        
+        hintTranslationDiv.innerHTML = hintHtml;
+        
+        // 添加按钮
+        const buttonGroup = document.createElement('div');
+        buttonGroup.className = 'button-group';
+        buttonGroup.innerHTML = `
+          <button class="hint-btn">提示翻译</button>
+          <button class="translate-btn">完整翻译</button>
+        `;
+        
+        // 组装句子
+        sentenceDiv.innerHTML = englishHtml;
+        sentenceDiv.appendChild(translationDiv);
+        sentenceDiv.appendChild(hintTranslationDiv);
+        sentenceDiv.appendChild(buttonGroup);
+        
+        container.appendChild(sentenceDiv);
+      });
+      
+      // 绑定填空验证事件
+      document.querySelectorAll('.blank-input').forEach(input => {
+        // 当获得焦点时隐藏首字母和下划线
+        input.addEventListener('focus', function() {
+          this.parentElement.querySelector('.blank-content').style.opacity = '0';
+        });
+        
+        // 当失去焦点且没有输入内容时，重新显示首字母和下划线
+        input.addEventListener('blur', function() {
+          if (!this.value.trim()) {
+            this.parentElement.querySelector('.blank-content').style.opacity = '0.4';
+          }
+        });
+        
+        input.addEventListener('input', function() {
+          let value = this.value.trim().toLowerCase();
+          const answer = this.dataset.answer.toLowerCase();
+          
+          // 如果有输入内容，保持提示隐藏
+          if (value) {
+            this.parentElement.querySelector('.blank-content').style.opacity = '0';
+          }
+          
+          if(value === answer) {
+            this.parentElement.classList.add("correct");
+            showFeedback("太棒了！继续加油！");
+            setTimeout(() => {
+              this.parentElement.classList.remove("correct");
+            }, 1500);
+          } else if(value.length >= answer.length) {
+            // 如果输入了错误的完整单词，显示错误反馈
+            this.parentElement.classList.remove("correct");
+            this.parentElement.classList.add("incorrect");
+            setTimeout(() => {
+              this.parentElement.classList.remove("incorrect");
+            }, 1500);
+          }
+        });
+      });
+      
+      // 绑定翻译按钮事件
+      bindTranslationEvents();
+    }
+    
     // 显示反馈信息
     function showFeedback(message) {
       const feedback = document.getElementById("feedback");
@@ -335,83 +599,49 @@
         feedback.style.display = "none";
       }, 2000);
     }
-
-    // 单词填空验证
-    document.getElementById("word1").addEventListener("input", function() {
-      let value = this.value.trim().toLowerCase();
-      if(value === "return") {
-        this.parentElement.classList.add("correct");
-        showFeedback("太棒了！继续加油！");
-        setTimeout(() => {
-          this.parentElement.classList.remove("correct");
-        }, 1500);
-      } else if(value.length > 3) {
-        // 如果输入了错误的完整单词，显示错误反馈
-        this.parentElement.classList.remove("correct");
-        this.parentElement.classList.add("incorrect");
-        setTimeout(() => {
-          this.parentElement.classList.remove("incorrect");
-        }, 1500);
-      }
-    });
-
-    document.getElementById("word2").addEventListener("input", function() {
-      let value = this.value.trim().toLowerCase();
-      if(value === "proud") {
-        this.parentElement.classList.add("correct");
-        showFeedback("太棒了！继续加油！");
-        setTimeout(() => {
-          this.parentElement.classList.remove("correct");
-        }, 1500);
-      } else if(value.length > 3) {
-        // 如果输入了错误的完整单词，显示错误反馈
-        this.parentElement.classList.remove("correct");
-        this.parentElement.classList.add("incorrect");
-        setTimeout(() => {
-          this.parentElement.classList.remove("incorrect");
-        }, 1500);
-      }
-    });
-
-    // 翻译按钮功能
-    document.querySelectorAll('.translate-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const sentence = this.closest('.sentence');
-        const translation = sentence.querySelector('.translation');
-        const hintTranslation = sentence.querySelector('.hint-translation');
-        
-        // 切换完整翻译显示状态
-        translation.classList.toggle('translation-visible');
-        
-        // 如果提示翻译是显示的，则隐藏它
-        if (hintTranslation.classList.contains('translation-visible')) {
-          hintTranslation.classList.remove('translation-visible');
-          sentence.querySelector('.hint-btn').textContent = '提示翻译';
-        }
-        
-        this.textContent = translation.classList.contains('translation-visible') ? '隐藏翻译' : '完整翻译';
-      });
-    });
     
-    // 提示翻译按钮功能
-    document.querySelectorAll('.hint-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const sentence = this.closest('.sentence');
-        const translation = sentence.querySelector('.translation');
-        const hintTranslation = sentence.querySelector('.hint-translation');
-        
-        // 切换提示翻译显示状态
-        hintTranslation.classList.toggle('translation-visible');
-        
-        // 如果完整翻译是显示的，则隐藏它
-        if (translation.classList.contains('translation-visible')) {
-          translation.classList.remove('translation-visible');
-          sentence.querySelector('.translate-btn').textContent = '完整翻译';
-        }
-        
-        this.textContent = hintTranslation.classList.contains('translation-visible') ? '隐藏提示' : '提示翻译';
+    // 绑定翻译按钮事件
+    function bindTranslationEvents() {
+      // 翻译按钮功能
+      document.querySelectorAll('.translate-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const sentence = this.closest('.sentence');
+          const translation = sentence.querySelector('.translation');
+          const hintTranslation = sentence.querySelector('.hint-translation');
+          
+          // 切换完整翻译显示状态
+          translation.classList.toggle('translation-visible');
+          
+          // 如果提示翻译是显示的，则隐藏它
+          if (hintTranslation.classList.contains('translation-visible')) {
+            hintTranslation.classList.remove('translation-visible');
+            sentence.querySelector('.hint-btn').textContent = '提示翻译';
+          }
+          
+          this.textContent = translation.classList.contains('translation-visible') ? '隐藏翻译' : '完整翻译';
+        });
       });
-    });
+      
+      // 提示翻译按钮功能
+      document.querySelectorAll('.hint-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const sentence = this.closest('.sentence');
+          const translation = sentence.querySelector('.translation');
+          const hintTranslation = sentence.querySelector('.hint-translation');
+          
+          // 切换提示翻译显示状态
+          hintTranslation.classList.toggle('translation-visible');
+          
+          // 如果完整翻译是显示的，则隐藏它
+          if (translation.classList.contains('translation-visible')) {
+            translation.classList.remove('translation-visible');
+            sentence.querySelector('.translate-btn').textContent = '完整翻译';
+          }
+          
+          this.textContent = hintTranslation.classList.contains('translation-visible') ? '隐藏提示' : '提示翻译';
+        });
+      });
+    }
 
     // 教师模式面板
     document.querySelector('.teacher-mode').addEventListener('click', function() {
@@ -480,6 +710,37 @@
         word.style.pointerEvents = 'none';
       });
       showFeedback('单词提示已禁用');
+    });
+    
+    // 编辑JSON按钮
+    document.getElementById('edit-json').addEventListener('click', function() {
+      document.getElementById('json-content').value = JSON.stringify(currentExercises, null, 2);
+      document.querySelector('.json-editor').classList.add('active');
+    });
+    
+    // 取消编辑
+    document.querySelector('.cancel-btn').addEventListener('click', function() {
+      document.querySelector('.json-editor').classList.remove('active');
+    });
+    
+    // 应用JSON
+    document.querySelector('.apply-btn').addEventListener('click', function() {
+      try {
+        const jsonContent = document.getElementById('json-content').value;
+        const exercises = JSON.parse(jsonContent);
+        currentExercises = exercises;
+        localStorage.setItem('exercises', jsonContent);
+        generateExercises(exercises);
+        document.querySelector('.json-editor').classList.remove('active');
+        showFeedback('题目已更新');
+      } catch (error) {
+        showFeedback('JSON格式错误');
+      }
+    });
+    
+    // 页面加载时生成题目
+    window.addEventListener('DOMContentLoaded', function() {
+      generateExercises(currentExercises);
     });
   </script>
 
