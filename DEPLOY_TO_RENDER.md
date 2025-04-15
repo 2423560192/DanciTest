@@ -39,13 +39,37 @@ Render将开始构建和部署您的应用。首次部署可能需要几分钟�
 
 您可以通过此URL访问您的英语完形填空互动练习。
 
+## JavaScript支持
+
+本项目已配置了特殊的Nginx设置，确保在Render上可以正常执行JavaScript代码：
+
+1. 使用自定义`nginx.conf`配置文件，其中包含正确的MIME类型和安全头
+2. 添加了必要的内容安全策略(CSP)，允许内联脚本执行
+3. 配置了适当的缓存控制和跨域访问策略
+
+这些配置在Dockerfile中通过以下方式应用：
+```dockerfile
+# 创建自定义Nginx配置，允许JavaScript执行
+RUN rm -f /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+```
+
+## 本地数据存储
+
+应用使用浏览器的localStorage API来保存和加载数据。这使得用户可以：
+
+1. 保存自定义题目到浏览器本地存储
+2. 在下次访问时加载之前保存的题目
+3. 不依赖服务器端存储便可使用所有功能
+
 ## 故障排除
 
 如果部署过程中遇到问题，请检查以下几点：
 
-1. **Docker构建失败**：检查Dockerfile是否正确
+1. **Docker构建失败**：检查Dockerfile和nginx.conf是否正确
 2. **无法访问网站**：检查应用是否成功启动，可以查看Render提供的日志
-3. **网页显示不正确**：确保所有静态资源都正确包含在项目中
+3. **JavaScript不执行**：检查浏览器控制台是否有错误，可能是内容安全策略问题
+4. **本地存储不工作**：确保浏览器允许localStorage，或者检查是否处于隐私模式
 
 ## 后续维护
 
