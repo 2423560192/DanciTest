@@ -230,8 +230,20 @@
     .hint-btn {
       background-color: #ff9800;
     }
+    
+    .show-answer-btn {
+      margin-left: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
 
-    .translate-btn:hover, .hint-btn:hover {
+    .translate-btn:hover, .hint-btn:hover, .show-answer-btn:hover {
       opacity: 0.9;
       transform: scale(1.05);
     }
@@ -376,6 +388,8 @@
     <button id="show-all-hints">显示所有提示翻译</button>
     <button id="enable-word-hints">启用单词提示</button>
     <button id="disable-word-hints">禁用单词提示</button>
+    <button id="show-all-answers">显示所有答案</button>
+    <button id="hide-all-answers">隐藏所有答案</button>
     <button id="edit-json">编辑JSON</button>
     <button id="save-local">保存到本地</button>
     <button id="load-local">加载本地数据</button>
@@ -586,6 +600,7 @@
         buttonGroup.innerHTML = `
           <button class="hint-btn">提示翻译</button>
           <button class="translate-btn">完整翻译</button>
+          <button class="show-answer-btn">显示答案</button>
         `;
         
         // 组装句子
@@ -697,6 +712,39 @@
           }
           
           this.textContent = hintTranslation.classList.contains('translation-visible') ? '隐藏提示' : '提示翻译';
+        });
+      });
+
+      // 显示答案按钮功能
+      document.querySelectorAll('.show-answer-btn').forEach(btn => {
+        let answersShown = false;
+
+        btn.addEventListener('click', function() {
+          const sentence = this.closest('.sentence');
+          const inputs = sentence.querySelectorAll('.blank-input');
+          
+          if (!answersShown) {
+            // 显示该句子的所有答案
+            inputs.forEach(input => {
+              const answer = input.dataset.answer;
+              input.value = answer;
+              input.parentElement.querySelector('.blank-content').style.opacity = '0';
+              input.parentElement.classList.add("correct");
+              input.setAttribute('readonly', true);
+            });
+            this.textContent = '隐藏答案';
+            answersShown = true;
+          } else {
+            // 隐藏该句子的所有答案
+            inputs.forEach(input => {
+              input.value = '';
+              input.parentElement.querySelector('.blank-content').style.opacity = '0.4';
+              input.parentElement.classList.remove("correct");
+              input.removeAttribute('readonly');
+            });
+            this.textContent = '显示答案';
+            answersShown = false;
+          }
         });
       });
     }
@@ -825,6 +873,30 @@
     // 初始化应用
     window.addEventListener('DOMContentLoaded', function() {
       initializeApp();
+    });
+
+    // 显示所有答案
+    document.getElementById('show-all-answers').addEventListener('click', function() {
+      document.querySelectorAll('.blank-input').forEach(input => {
+        const answer = input.dataset.answer;
+        input.value = answer;
+        input.parentElement.querySelector('.blank-content').style.opacity = '0';
+        input.parentElement.classList.add("correct");
+        input.setAttribute('readonly', true);
+      });
+      showFeedback('已显示所有答案');
+    });
+
+    // 隐藏所有答案
+    document.getElementById('hide-all-answers').addEventListener('click', function() {
+      document.querySelectorAll('.blank-input').forEach(input => {
+        input.value = '';
+        input.parentElement.querySelector('.blank-content').style.opacity = '0.4';
+        input.parentElement.classList.remove("correct");
+        input.parentElement.classList.remove("incorrect");
+        input.removeAttribute('readonly');
+      });
+      showFeedback('已隐藏所有答案');
     });
   </script>
 
