@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英语完形填空互动题库</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+
+    body {
+      font-family: 'Comic Neue', cursive;
+      background-color: #f5f5f5;
+      padding: 20px;
+      background-image: url('https://img.freepik.com/free-vector/hand-drawn-school-background_23-2149464866.jpg');
+      background-size: cover;
+      background-attachment: fixed;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      margin: auto;
+      border: 3px solid #ffcc00;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ff6b6b;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      font-size: 2.5em;
+      margin-bottom: 30px;
+    }
+
+    .sentence {
+      font-size: 20px;
+      line-height: 2;
+      margin-bottom: 25px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+      position: relative;
+    }
+
+    .sentence:hover {
+      transform: scale(1.01);
+    }
+
+    .word {
+      color: #4a90e2;
+      font-weight: bold;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .word-tooltip {
+      visibility: hidden;
+      width: 120px;
+      background-color: #ffcc00;
+      color: #333;
+      text-align: center;
+      border-radius: 8px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -60px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    .word:hover .word-tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .blank-container {
+      display: inline-block;
+      position: relative;
+      vertical-align: middle;
+    }
+
+    .blank-box {
+      display: inline-block;
+      width: 100px;
+      height: 40px;
+      background-color: #fff8e1;
+      border: 1px solid #ffcc00;
+      border-radius: 5px;
+      text-align: center;
+      line-height: 40px;
+      margin: 0 5px;
+      font-size: 18px;
+      color: #333;
+      position: relative;
+    }
+
+    .blank-hint {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #aaa;
+    }
+
+    .blank-input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-size: 18px;
+      font-family: 'Comic Neue', cursive;
+      color: #333;
+      outline: none;
+    }
+
+    .blank-box.correct {
+      background-color: #dff0d8;
+      border-color: #5cb85c;
+    }
+
+    .blank-box.incorrect {
+      background-color: #f2dede;
+      border-color: #d9534f;
+    }
+
+    .translation {
+      display: none;
+      color: #666;
+      font-style: italic;
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+    }
+    
+    .hint-translation {
+      display: none;
+      color: #666;
+      font-style: italic;
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #e0f7fa;
+      border-radius: 8px;
+    }
+
+    .translation-visible {
+      display: block !important;
+    }
+    
+    .hint-word {
+      color: #ff6b6b;
+      font-weight: bold;
+      border-bottom: 2px dotted #ff6b6b;
+      padding: 0 3px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 15px;
+    }
+
+    .translate-btn, .hint-btn {
+      margin-left: 10px;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .hint-btn {
+      background-color: #ff9800;
+    }
+
+    .translate-btn:hover, .hint-btn:hover {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+
+    .feedback {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 10px;
+      display: none;
+      font-size: 18px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+
+    .teacher-mode {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #ff6b6b;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 50px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+
+    .teacher-panel {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background-color: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 1000;
+      width: 200px;
+    }
+
+    .teacher-panel.active {
+      display: block;
+    }
+
+    .teacher-panel button {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      cursor: pointer;
+    }
+
+    .teacher-panel button:hover {
+      background-color: #3a7bc8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🌟 英语完形填空互动练习 🌟</h1>
+
+    <div class="sentence">
+      One day, I <span class="word" data-meaning="找到">found<span class="word-tooltip">找到</span></span> a wallet on the ground. 
+      <span class="word" data-meaning="我">I<span class="word-tooltip">我</span></span> picked it up and looked 
+      <span class="word" data-meaning="周围">around<span class="word-tooltip">周围</span></span>.
+      <div class="translation">有一天，我在地上捡到了一个钱包。我捡起它，看了看周围。</div>
+      <div class="hint-translation">有一天，我<span class="hint-word">f___</span>到了一个钱包。<span class="hint-word">我</span>捡起它，看了看<span class="hint-word">周围</span>。</div>
+      <div class="button-group">
+        <button class="hint-btn">提示翻译</button>
+        <button class="translate-btn">完整翻译</button>
+      </div>
+    </div>
+
+    <div class="sentence">
+      I decided to 
+      <div class="blank-container">
+        <div class="blank-box">
+          <input type="text" class="blank-input" id="word1" placeholder="r____">
+        </div>
+      </div>
+      it to the 
+      <span class="word" data-meaning="警察局">police station<span class="word-tooltip">警察局</span></span>.
+      <div class="translation">我决定把它交给警察局。</div>
+      <div class="hint-translation">我决定把它<span class="hint-word">r___</span>到警察局。</div>
+      <div class="button-group">
+        <button class="hint-btn">提示翻译</button>
+        <button class="translate-btn">完整翻译</button>
+      </div>
+    </div>
+
+    <div class="sentence">
+      The police officer was very <span class="word" data-meaning="感激的">grateful<span class="word-tooltip">感激的</span></span> and praised me.
+      <div class="translation">警察非常感激并称赞了我。</div>
+      <div class="hint-translation">警察非常<span class="hint-word">g___</span>并称赞了我。</div>
+      <div class="button-group">
+        <button class="hint-btn">提示翻译</button>
+        <button class="translate-btn">完整翻译</button>
+      </div>
+    </div>
+
+    <div class="sentence">
+      It made me feel 
+      <div class="blank-container">
+        <div class="blank-box">
+          <input type="text" class="blank-input" id="word2" placeholder="p____">
+        </div>
+      </div>
+      of myself.
+      <div class="translation">这让我感到很自豪。</div>
+      <div class="hint-translation">这让我感到很<span class="hint-word">p___</span>。</div>
+      <div class="button-group">
+        <button class="hint-btn">提示翻译</button>
+        <button class="translate-btn">完整翻译</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="feedback" id="feedback">太棒了！继续加油！</div>
+  
+  <div class="teacher-mode">教师模式</div>
+  <div class="teacher-panel">
+    <button id="show-all-translations">显示所有翻译</button>
+    <button id="hide-all-translations">隐藏所有翻译</button>
+    <button id="show-all-hints">显示所有提示翻译</button>
+    <button id="enable-word-hints">启用单词提示</button>
+    <button id="disable-word-hints">禁用单词提示</button>
+  </div>
+
+  <script>
+    // 显示反馈信息
+    function showFeedback(message) {
+      const feedback = document.getElementById("feedback");
+      feedback.textContent = message;
+      feedback.style.display = "block";
+      setTimeout(() => {
+        feedback.style.display = "none";
+      }, 2000);
+    }
+
+    // 单词填空验证
+    document.getElementById("word1").addEventListener("input", function() {
+      let value = this.value.trim().toLowerCase();
+      if(value === "return") {
+        this.parentElement.classList.add("correct");
+        showFeedback("太棒了！继续加油！");
+        setTimeout(() => {
+          this.parentElement.classList.remove("correct");
+        }, 1500);
+      } else if(value.length > 3) {
+        // 如果输入了错误的完整单词，显示错误反馈
+        this.parentElement.classList.remove("correct");
+        this.parentElement.classList.add("incorrect");
+        setTimeout(() => {
+          this.parentElement.classList.remove("incorrect");
+        }, 1500);
+      }
+    });
+
+    document.getElementById("word2").addEventListener("input", function() {
+      let value = this.value.trim().toLowerCase();
+      if(value === "proud") {
+        this.parentElement.classList.add("correct");
+        showFeedback("太棒了！继续加油！");
+        setTimeout(() => {
+          this.parentElement.classList.remove("correct");
+        }, 1500);
+      } else if(value.length > 3) {
+        // 如果输入了错误的完整单词，显示错误反馈
+        this.parentElement.classList.remove("correct");
+        this.parentElement.classList.add("incorrect");
+        setTimeout(() => {
+          this.parentElement.classList.remove("incorrect");
+        }, 1500);
+      }
+    });
+
+    // 翻译按钮功能
+    document.querySelectorAll('.translate-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const sentence = this.closest('.sentence');
+        const translation = sentence.querySelector('.translation');
+        const hintTranslation = sentence.querySelector('.hint-translation');
+        
+        // 切换完整翻译显示状态
+        translation.classList.toggle('translation-visible');
+        
+        // 如果提示翻译是显示的，则隐藏它
+        if (hintTranslation.classList.contains('translation-visible')) {
+          hintTranslation.classList.remove('translation-visible');
+          sentence.querySelector('.hint-btn').textContent = '提示翻译';
+        }
+        
+        this.textContent = translation.classList.contains('translation-visible') ? '隐藏翻译' : '完整翻译';
+      });
+    });
+    
+    // 提示翻译按钮功能
+    document.querySelectorAll('.hint-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const sentence = this.closest('.sentence');
+        const translation = sentence.querySelector('.translation');
+        const hintTranslation = sentence.querySelector('.hint-translation');
+        
+        // 切换提示翻译显示状态
+        hintTranslation.classList.toggle('translation-visible');
+        
+        // 如果完整翻译是显示的，则隐藏它
+        if (translation.classList.contains('translation-visible')) {
+          translation.classList.remove('translation-visible');
+          sentence.querySelector('.translate-btn').textContent = '完整翻译';
+        }
+        
+        this.textContent = hintTranslation.classList.contains('translation-visible') ? '隐藏提示' : '提示翻译';
+      });
+    });
+
+    // 教师模式面板
+    document.querySelector('.teacher-mode').addEventListener('click', function() {
+      document.querySelector('.teacher-panel').classList.toggle('active');
+    });
+
+    // 显示所有翻译
+    document.getElementById('show-all-translations').addEventListener('click', function() {
+      document.querySelectorAll('.translation').forEach(translation => {
+        translation.classList.add('translation-visible');
+      });
+      document.querySelectorAll('.hint-translation').forEach(hint => {
+        hint.classList.remove('translation-visible');
+      });
+      document.querySelectorAll('.translate-btn').forEach(btn => {
+        btn.textContent = '隐藏翻译';
+      });
+      document.querySelectorAll('.hint-btn').forEach(btn => {
+        btn.textContent = '提示翻译';
+      });
+    });
+
+    // 隐藏所有翻译
+    document.getElementById('hide-all-translations').addEventListener('click', function() {
+      document.querySelectorAll('.translation').forEach(translation => {
+        translation.classList.remove('translation-visible');
+      });
+      document.querySelectorAll('.hint-translation').forEach(hint => {
+        hint.classList.remove('translation-visible');
+      });
+      document.querySelectorAll('.translate-btn').forEach(btn => {
+        btn.textContent = '完整翻译';
+      });
+      document.querySelectorAll('.hint-btn').forEach(btn => {
+        btn.textContent = '提示翻译';
+      });
+    });
+    
+    // 显示所有提示翻译
+    document.getElementById('show-all-hints').addEventListener('click', function() {
+      document.querySelectorAll('.hint-translation').forEach(hint => {
+        hint.classList.add('translation-visible');
+      });
+      document.querySelectorAll('.translation').forEach(translation => {
+        translation.classList.remove('translation-visible');
+      });
+      document.querySelectorAll('.hint-btn').forEach(btn => {
+        btn.textContent = '隐藏提示';
+      });
+      document.querySelectorAll('.translate-btn').forEach(btn => {
+        btn.textContent = '完整翻译';
+      });
+    });
+
+    // 启用单词提示
+    document.getElementById('enable-word-hints').addEventListener('click', function() {
+      document.querySelectorAll('.word').forEach(word => {
+        word.style.pointerEvents = 'auto';
+      });
+      showFeedback('单词提示已启用');
+    });
+
+    // 禁用单词提示
+    document.getElementById('disable-word-hints').addEventListener('click', function() {
+      document.querySelectorAll('.word').forEach(word => {
+        word.style.pointerEvents = 'none';
+      });
+      showFeedback('单词提示已禁用');
+    });
+  </script>
+
+</body>
+</html>
