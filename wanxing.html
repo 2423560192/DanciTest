@@ -51,18 +51,60 @@
       transition: transform 0.1s, opacity 0.5s;
     }
 
-    /* 教师模式开关 - 控制鼠标特效 */
-    .mouse-effect-toggle {
+    
+
+    /* 鼠标样式控制区 */
+    .mouse-controls {
       position: fixed;
-      top: 60px;
-      right: 10px;
-      background-color: #4CAF50;
+      top: 85px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 9999;
+    }
+    
+    .mouse-controls button {
+      background-color: #4a90e2;
       color: white;
-      padding: 5px 10px;
+      border: none;
+      padding: 8px 16px;
       cursor: pointer;
       border-radius: 5px;
-      z-index: 9999;
-      font-size: 14px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .mouse-controls button:hover {
+      background-color: #3a7bc8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .mouse-controls button.active {
+      background-color: #ff6b6b;
+      box-shadow: 0 4px 10px rgba(255,107,107,0.5);
+      transform: translateY(-3px);
+      font-weight: bold;
+    }
+    
+    .mouse-controls button.active::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background-color: #fff;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
     }
 
     /* 鼠标高亮特效 */
@@ -473,8 +515,13 @@
 
   <div class="feedback" id="feedback">太棒了！继续加油！</div>
   
+  <div class="mouse-controls">
+    <button id="cursor-default">默认</button>
+    <button id="cursor-highlight">高亮</button>
+    <button id="cursor-arrow">箭头</button>
+  </div>
+  
   <div class="teacher-mode">教师模式</div>
-  <div class="mouse-effect-toggle">鼠标效果</div>
   <div class="teacher-panel">
     <button id="show-all-translations">显示所有翻译</button>
     <button id="hide-all-translations">隐藏所有翻译</button>
@@ -486,11 +533,6 @@
     <button id="edit-json">编辑JSON</button>
     <button id="save-local">保存到本地</button>
     <button id="load-local">加载本地数据</button>
-    <hr>
-    <p style="text-align: center; margin: 5px 0;">鼠标指针样式</p>
-    <button id="cursor-default">默认指针</button>
-    <button id="cursor-highlight">高亮指针</button>
-    <button id="cursor-arrow">箭头指针</button>
     </div>
 
   <div class="json-editor">
@@ -980,6 +1022,9 @@
       const cursorArrow = document.querySelector('.cursor-arrow');
       let currentCursor = 'default'; // 'default', 'highlight', 'arrow'
       
+      // 初始激活默认按钮
+      document.getElementById('cursor-default').classList.add('active');
+      
       // 更新鼠标指针位置
       document.addEventListener('mousemove', function(e) {
         if (currentCursor === 'default') return;
@@ -1013,15 +1058,13 @@
       // 点击效果
       document.addEventListener('mousedown', function() {
         if (currentCursor === 'highlight') {
-          cursorHighlight.style.width = '110px';
-          cursorHighlight.style.height = '110px';
+          // 移除放大效果
         }
       });
       
       document.addEventListener('mouseup', function() {
         if (currentCursor === 'highlight') {
-          cursorHighlight.style.width = '80px';
-          cursorHighlight.style.height = '80px';
+          // 移除放大效果
         }
       });
       
@@ -1033,22 +1076,27 @@
         cursorHighlight.style.display = 'none';
         cursorArrow.style.display = 'none';
         
+        // 更新按钮状态
+        document.querySelectorAll('.mouse-controls button').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
         // 根据类型设置样式
         if (type === 'default') {
           document.body.style.cursor = 'auto';
-          mouseEffectToggle.textContent = '鼠标效果';
+          document.getElementById('cursor-default').classList.add('active');
           showFeedback('已切换到默认鼠标指针');
         } 
         else if (type === 'highlight') {
           document.body.style.cursor = 'none';
           cursorHighlight.style.display = 'block';
-          mouseEffectToggle.textContent = '关闭效果';
+          document.getElementById('cursor-highlight').classList.add('active');
           showFeedback('已启用高亮指针');
         }
         else if (type === 'arrow') {
           document.body.style.cursor = 'none';
           cursorArrow.style.display = 'block';
-          mouseEffectToggle.textContent = '关闭效果';
+          document.getElementById('cursor-arrow').classList.add('active');
           showFeedback('已启用箭头指针');
         }
       }
@@ -1064,16 +1112,6 @@
       
       document.getElementById('cursor-arrow').addEventListener('click', function() {
         setCursorType('arrow');
-      });
-      
-      // 鼠标特效开关
-      const mouseEffectToggle = document.querySelector('.mouse-effect-toggle');
-      mouseEffectToggle.addEventListener('click', function() {
-        if (currentCursor === 'default') {
-          setCursorType('highlight');
-        } else {
-          setCursorType('default');
-        }
       });
       
       // 初始设置
