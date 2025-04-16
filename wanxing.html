@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>英语完形填空互动题库</title>
+  <title>英语完形填空互动练习</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
 
@@ -14,6 +14,73 @@
       background-image: url('https://img.freepik.com/free-vector/hand-drawn-school-background_23-2149464866.jpg');
       background-size: cover;
       background-attachment: fixed;
+    }
+
+    /* 自定义鼠标指针 */
+    .cursor {
+      position: fixed;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: rgba(255, 204, 0, 0.3);
+      border: 2px solid rgba(255, 107, 107, 0.7);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 9999;
+      transition: width 0.2s, height 0.2s;
+      box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+    }
+
+    /* 鼠标点击时的特效 */
+    .cursor.clicking {
+      width: 50px;
+      height: 50px;
+      background-color: rgba(255, 107, 107, 0.3);
+      border: 2px solid rgba(255, 204, 0, 0.7);
+    }
+
+    /* 鼠标拖尾效果 */
+    .cursor-trail {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: rgba(255, 204, 0, 0.2);
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.1s, opacity 0.5s;
+    }
+
+    /* 教师模式开关 - 控制鼠标特效 */
+    .mouse-effect-toggle {
+      position: fixed;
+      top: 60px;
+      right: 10px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      z-index: 9999;
+      font-size: 14px;
+    }
+
+    /* 鼠标高亮特效 */
+    .cursor-highlight {
+      position: fixed;
+      pointer-events: none;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(247, 99, 0, 0.5) 0%, rgba(255,255,0,0) 70%);
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      transition: width 0.2s, height 0.2s;
+    }
+
+    /* 鼠标高亮开关悬浮效果 */
+    .mouse-effect-toggle:hover {
+      background-color: #45a049;
     }
 
     .container {
@@ -60,7 +127,7 @@
     .word-tooltip {
       visibility: hidden;
       width: 120px;
-      background-color: #ffcc00;
+      background-color: #e78617;
       color: #333;
       text-align: center;
       border-radius: 8px;
@@ -368,9 +435,34 @@
       background-color: #f44336;
       color: white;
     }
+
+    /* 箭头指针样式 */
+    .cursor-arrow {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,107,107,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>');
+      background-repeat: no-repeat;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 0 2px rgba(255, 204, 0, 0.9));
+      display: none;
+    }
+    
+    /* 调整控制面板中的分隔线样式 */
+    .teacher-panel hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
+  <!-- 自定义鼠标指针元素 -->
+  <div class="cursor"></div>
+  <div class="cursor-highlight" style="display: none;"></div>
+  <div class="cursor-arrow"></div>
 
   <div class="container" id="exercise-container">
     <h1>🌟 英语完形填空互动练习 🌟</h1>
@@ -382,6 +474,7 @@
   <div class="feedback" id="feedback">太棒了！继续加油！</div>
   
   <div class="teacher-mode">教师模式</div>
+  <div class="mouse-effect-toggle">鼠标效果</div>
   <div class="teacher-panel">
     <button id="show-all-translations">显示所有翻译</button>
     <button id="hide-all-translations">隐藏所有翻译</button>
@@ -393,6 +486,11 @@
     <button id="edit-json">编辑JSON</button>
     <button id="save-local">保存到本地</button>
     <button id="load-local">加载本地数据</button>
+    <hr>
+    <p style="text-align: center; margin: 5px 0;">鼠标指针样式</p>
+    <button id="cursor-default">默认指针</button>
+    <button id="cursor-highlight">高亮指针</button>
+    <button id="cursor-arrow">箭头指针</button>
     </div>
 
   <div class="json-editor">
@@ -873,8 +971,115 @@
     // 初始化应用
     window.addEventListener('DOMContentLoaded', function() {
       initializeApp();
+      initMouseHighlight();
     });
-
+    
+    // 鼠标高亮功能
+    function initMouseHighlight() {
+      const cursorHighlight = document.querySelector('.cursor-highlight');
+      const cursorArrow = document.querySelector('.cursor-arrow');
+      let currentCursor = 'default'; // 'default', 'highlight', 'arrow'
+      
+      // 更新鼠标指针位置
+      document.addEventListener('mousemove', function(e) {
+        if (currentCursor === 'default') return;
+        
+        // 检查鼠标是否在文字、输入框或按钮上
+        const target = e.target;
+        const isOverInteractive = target.classList.contains('word') || 
+                          target.closest('.word') || 
+                          target.classList.contains('blank-input') || 
+                          target.closest('.blank-input') ||
+                          target.tagName === 'BUTTON' ||
+                          target.tagName === 'INPUT';
+        
+        // 更新高亮指针位置
+        const coords = { x: e.clientX, y: e.clientY };
+        
+        if (currentCursor === 'highlight') {
+          cursorHighlight.style.left = coords.x + 'px';
+          cursorHighlight.style.top = coords.y + 'px';
+          // 在互动元素上降低透明度
+          cursorHighlight.style.opacity = isOverInteractive ? '0.3' : '1';
+        } 
+        else if (currentCursor === 'arrow') {
+          cursorArrow.style.left = coords.x + 'px';
+          cursorArrow.style.top = coords.y + 'px';
+          // 箭头始终显示
+          cursorArrow.style.opacity = isOverInteractive ? '0.7' : '1';
+        }
+      });
+      
+      // 点击效果
+      document.addEventListener('mousedown', function() {
+        if (currentCursor === 'highlight') {
+          cursorHighlight.style.width = '110px';
+          cursorHighlight.style.height = '110px';
+        }
+      });
+      
+      document.addEventListener('mouseup', function() {
+        if (currentCursor === 'highlight') {
+          cursorHighlight.style.width = '80px';
+          cursorHighlight.style.height = '80px';
+        }
+      });
+      
+      // 设置鼠标效果类型
+      function setCursorType(type) {
+        // 先重置所有样式
+        currentCursor = type;
+        document.body.style.cursor = 'auto';
+        cursorHighlight.style.display = 'none';
+        cursorArrow.style.display = 'none';
+        
+        // 根据类型设置样式
+        if (type === 'default') {
+          document.body.style.cursor = 'auto';
+          mouseEffectToggle.textContent = '鼠标效果';
+          showFeedback('已切换到默认鼠标指针');
+        } 
+        else if (type === 'highlight') {
+          document.body.style.cursor = 'none';
+          cursorHighlight.style.display = 'block';
+          mouseEffectToggle.textContent = '关闭效果';
+          showFeedback('已启用高亮指针');
+        }
+        else if (type === 'arrow') {
+          document.body.style.cursor = 'none';
+          cursorArrow.style.display = 'block';
+          mouseEffectToggle.textContent = '关闭效果';
+          showFeedback('已启用箭头指针');
+        }
+      }
+      
+      // 绑定指针样式按钮
+      document.getElementById('cursor-default').addEventListener('click', function() {
+        setCursorType('default');
+      });
+      
+      document.getElementById('cursor-highlight').addEventListener('click', function() {
+        setCursorType('highlight');
+      });
+      
+      document.getElementById('cursor-arrow').addEventListener('click', function() {
+        setCursorType('arrow');
+      });
+      
+      // 鼠标特效开关
+      const mouseEffectToggle = document.querySelector('.mouse-effect-toggle');
+      mouseEffectToggle.addEventListener('click', function() {
+        if (currentCursor === 'default') {
+          setCursorType('highlight');
+        } else {
+          setCursorType('default');
+        }
+      });
+      
+      // 初始设置
+      setCursorType('default');
+    }
+    
     // 显示所有答案
     document.getElementById('show-all-answers').addEventListener('click', function() {
       document.querySelectorAll('.blank-input').forEach(input => {
@@ -886,7 +1091,7 @@
       });
       showFeedback('已显示所有答案');
     });
-
+    
     // 隐藏所有答案
     document.getElementById('hide-all-answers').addEventListener('click', function() {
       document.querySelectorAll('.blank-input').forEach(input => {
