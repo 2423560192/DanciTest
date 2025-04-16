@@ -315,6 +315,78 @@
       display: block;
     }
 
+    /* 语法结构展示框样式 */
+    .grammar-box {
+      display: none;
+      color: #333;
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #e8f5e9;
+      border-radius: 8px;
+      border-left: 4px solid #4CAF50;
+    }
+    
+    .grammar-box.visible {
+      display: block;
+    }
+    
+    /* 语法结构标记样式 */
+    .grammar-subject {
+      color: #e91e63;
+      font-weight: bold;
+      padding: 0 2px;
+      border-bottom: 2px solid #e91e63;
+    }
+    
+    .grammar-verb {
+      color: #2196f3;
+      font-weight: bold;
+      padding: 0 2px;
+      border-bottom: 2px solid #2196f3;
+    }
+    
+    .grammar-object {
+      color: #ff9800;
+      font-weight: bold;
+      padding: 0 2px;
+      border-bottom: 2px solid #ff9800;
+    }
+    
+    .grammar-modifier {
+      color: #4caf50;
+      font-weight: bold;
+      padding: 0 2px;
+      border-bottom: 2px solid #4caf50;
+    }
+    
+    .grammar-preposition {
+      color: #9c27b0;
+      font-weight: bold;
+      padding: 0 2px;
+      border-bottom: 2px solid #9c27b0;
+    }
+    
+    .grammar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #ccc;
+    }
+    
+    .grammar-legend-item {
+      display: flex;
+      align-items: center;
+    }
+    
+    .grammar-legend-color {
+      width: 14px;
+      height: 14px;
+      margin-right: 5px;
+      border-radius: 3px;
+    }
+
     .translation-visible {
       display: block !important;
     }
@@ -339,7 +411,7 @@
       margin-top: 15px;
     }
 
-    .translate-btn, .hint-btn, .explanation-btn, .show-answer-btn {
+    .translate-btn, .hint-btn, .explanation-btn, .grammar-btn, .show-answer-btn {
       margin-left: 10px;
       color: white;
       border: none;
@@ -358,11 +430,15 @@
       background-color: #ff9800;
     }
     
+    .grammar-btn {
+      background-color: #4CAF50;
+    }
+    
     .show-answer-btn {
       background-color: #4CAF50;
     }
 
-    .translate-btn:hover, .hint-btn:hover, .explanation-btn:hover, .show-answer-btn:hover {
+    .translate-btn:hover, .hint-btn:hover, .explanation-btn:hover, .grammar-btn:hover, .show-answer-btn:hover {
       opacity: 0.9;
       transform: scale(1.05);
     }
@@ -525,14 +601,58 @@
 
   <div class="feedback" id="feedback">太棒了！继续加油！</div>
   
-  <div class="mouse-controls">
-    <button id="cursor-default">默认</button>
-    <button id="cursor-highlight">高亮</button>
-    <button id="cursor-arrow">箭头</button>
+  <div class="left-controls">
+    <button id="show-translations" class="control-btn" data-tooltip="显示或隐藏所有句子翻译">显示翻译</button>
+    <button id="show-grammar" class="control-btn" data-tooltip="显示或隐藏语法解析">语法解析</button>
+    <button id="show-hints" class="control-btn" data-tooltip="显示或隐藏单词提示">显示提示</button>
+    <button id="show-explanations" class="control-btn" data-tooltip="显示或隐藏单词解释">显示释义</button>
+  </div>
+  <div class="right-controls">
+    <div class="mouse-controls">
+      <div class="button-group">
+        <button id="cursor-default" class="cursor-btn">默认</button>
+        <button id="cursor-highlight" class="cursor-btn active">高亮</button>
+        <button id="cursor-arrow" class="cursor-btn">箭头</button>
+      </div>
+    </div>
+    <button id="show-all-answers" class="control-btn" data-tooltip="显示所有答案">显示答案</button>
   </div>
   
   <div class="teacher-mode">教师模式</div>
   <div class="teacher-panel">
+    <div class="control-panel">
+      <h3>教师控制面板</h3>
+      <div class="control-item">
+        <label>
+          <input type="checkbox" class="toggle-translate-btn" checked> 允许查看完整翻译
+        </label>
+      </div>
+      <div class="control-item">
+        <label>
+          <input type="checkbox" class="toggle-hint-btn" checked> 允许查看提示翻译
+        </label>
+      </div>
+      <div class="control-item">
+        <label>
+          <input type="checkbox" class="toggle-explanation-btn" checked> 允许查看解析
+        </label>
+      </div>
+      <div class="control-item">
+        <label>
+          <input type="checkbox" class="toggle-grammar-btn" checked> 允许查看语法结构
+        </label>
+      </div>
+      <div class="control-item">
+        <label>
+          <input type="checkbox" class="toggle-show-answer-btn" checked> 允许查看答案
+        </label>
+      </div>
+      <div class="control-item">
+        <label>
+          <input type="checkbox" class="toggle-show-all-meanings" checked> 允许查看单词释义
+        </label>
+      </div>
+    </div>
     <button id="show-all-translations">显示所有翻译</button>
     <button id="hide-all-translations">隐藏所有翻译</button>
     <button id="show-all-hints">显示所有提示翻译</button>
@@ -540,8 +660,6 @@
     <button id="hide-all-explanations">隐藏所有解析</button>
     <button id="enable-word-hints">启用单词提示</button>
     <button id="disable-word-hints">禁用单词提示</button>
-    <button id="show-all-answers">显示所有答案</button>
-    <button id="hide-all-answers">隐藏所有答案</button>
     <button id="edit-json">编辑JSON</button>
     <button id="save-local">保存到本地</button>
     <button id="load-local">加载本地数据</button>
@@ -567,6 +685,10 @@
         "translation": "有一天，我在地上捡到了一个钱包。我捡起它，看了看周围。",
         "hint_translation": "有一天，我[f___]到了一个钱包。{我}捡起它，看了看{周围}。",
         "explanation": "这个句子描述过去发生的事情，需要用动词的过去式。find的过去式是found，表示\"找到/发现\"，符合句子语境：在地上偶然发现了一个钱包。",
+        "grammar": {
+          "structure": "One day, <span class='grammar-subject'>I</span> <span class='grammar-verb'>found</span> <span class='grammar-object'>a wallet</span> <span class='grammar-preposition'>on</span> <span class='grammar-object'>the ground</span>. <span class='grammar-subject'>I</span> <span class='grammar-verb'>picked</span> <span class='grammar-object'>it</span> <span class='grammar-modifier'>up</span> and <span class='grammar-verb'>looked</span> <span class='grammar-modifier'>around</span>.",
+          "explanation": "第一句是简单句，主语I + 谓语动词found + 宾语a wallet + 介词短语on the ground。第二句是并列句，主语I + 谓语动词picked + 宾语it + 副词up 和 主语I(省略) + 谓语动词looked + 副词around。"
+        },
         "words": [
           { "word": "found", "meaning": "找到", "isBlank": true, "answer": "found" },
           { "word": "I", "meaning": "我", "isBlank": false },
@@ -579,6 +701,10 @@
         "translation": "我决定把它交给警察局。",
         "hint_translation": "{我}决定把它[r___]到{警察局}。",
         "explanation": "句子表示\"我决定把钱包归还到警察局\"，需要用动词原形return(归还)。此处decided to后接动词原形，表示决定做某事。",
+        "grammar": {
+          "structure": "<span class='grammar-subject'>I</span> <span class='grammar-verb'>decided</span> <span class='grammar-modifier'>to</span> <span class='grammar-verb'>return</span> <span class='grammar-object'>it</span> <span class='grammar-preposition'>to</span> <span class='grammar-object'>the police station</span>.",
+          "explanation": "这是一个含有不定式的句子。主语I + 谓语动词decided + 不定式to return作目的状语 + 宾语it + 介词短语to the police station表示方向。"
+        },
         "words": [
           { "word": "I", "meaning": "我", "isBlank": false },
           { "word": "return", "meaning": "归还", "isBlank": true, "answer": "return" },
@@ -591,6 +717,10 @@
         "translation": "警察非常感激并称赞了我。",
         "hint_translation": "{警察}非常{感激的}并[p___]了我。",
         "explanation": "句子描述过去发生的事情，需要用动词的过去式。praise的过去式是praised，表示\"称赞\"，符合情境：警察因为我归还钱包而称赞我。",
+        "grammar": {
+          "structure": "<span class='grammar-subject'>The police officer</span> <span class='grammar-verb'>was</span> <span class='grammar-modifier'>very</span> <span class='grammar-modifier'>grateful</span> and <span class='grammar-verb'>praised</span> <span class='grammar-object'>me</span>.",
+          "explanation": "这是一个并列谓语的句子。主语The police officer + 系动词was + 表语very grateful和谓语动词praised + 宾语me。两个谓语由连词and连接。"
+        },
         "words": [
           { "word": "police", "meaning": "警察", "isBlank": false },
           { "word": "grateful", "meaning": "感激的", "isBlank": false },
@@ -603,6 +733,10 @@
         "translation": "这让我感到很自豪。",
         "hint_translation": "{它}让我感到很[p___]。",
         "explanation": "feel后需要形容词作为补语，描述感受。proud是形容词，表示\"自豪的\"，符合情境：因为做了好事而感到自豪。",
+        "grammar": {
+          "structure": "<span class='grammar-subject'>It</span> <span class='grammar-verb'>made</span> <span class='grammar-object'>me</span> <span class='grammar-verb'>feel</span> <span class='grammar-modifier'>proud</span> <span class='grammar-preposition'>of</span> <span class='grammar-object'>myself</span>.",
+          "explanation": "这是一个复合句型：主语It + 谓语动词made + 宾语me + 宾语补足语feel proud of myself。其中，feel为非谓语动词，proud为形容词作感官动词feel的补语，of myself为介词短语修饰proud。"
+        },
         "words": [
           { "word": "It", "meaning": "它", "isBlank": false },
           { "word": "proud", "meaning": "自豪的", "isBlank": true, "answer": "proud" }
@@ -755,6 +889,43 @@
         explanationDiv.className = 'explanation-box';
         explanationDiv.innerHTML = exercise.explanation || '暂无解析';
         
+        // 添加语法结构框
+        const grammarDiv = document.createElement('div');
+        grammarDiv.className = 'grammar-box';
+        
+        // 检查是否有语法结构数据
+        if (exercise.grammar) {
+          // 添加句子的语法结构标记
+          grammarDiv.innerHTML = `
+            <div>${exercise.grammar.structure}</div>
+            <div style="margin-top: 10px;">${exercise.grammar.explanation}</div>
+            <div class="grammar-legend">
+              <div class="grammar-legend-item">
+                <div class="grammar-legend-color" style="background-color: #e91e63;"></div>
+                <div>主语</div>
+              </div>
+              <div class="grammar-legend-item">
+                <div class="grammar-legend-color" style="background-color: #2196f3;"></div>
+                <div>谓语</div>
+              </div>
+              <div class="grammar-legend-item">
+                <div class="grammar-legend-color" style="background-color: #ff9800;"></div>
+                <div>宾语</div>
+              </div>
+              <div class="grammar-legend-item">
+                <div class="grammar-legend-color" style="background-color: #4caf50;"></div>
+                <div>修饰语</div>
+              </div>
+              <div class="grammar-legend-item">
+                <div class="grammar-legend-color" style="background-color: #9c27b0;"></div>
+                <div>介词</div>
+              </div>
+            </div>
+          `;
+        } else {
+          grammarDiv.innerHTML = '暂无语法结构分析';
+        }
+        
         // 添加按钮
         const buttonGroup = document.createElement('div');
         buttonGroup.className = 'button-group';
@@ -762,6 +933,7 @@
           <button class="hint-btn">提示翻译</button>
           <button class="translate-btn">完整翻译</button>
           <button class="explanation-btn">解析</button>
+          <button class="grammar-btn">语法结构</button>
           <button class="show-answer-btn">显示答案</button>
         `;
         
@@ -770,6 +942,7 @@
         sentenceDiv.appendChild(translationDiv);
         sentenceDiv.appendChild(hintTranslationDiv);
         sentenceDiv.appendChild(explanationDiv);
+        sentenceDiv.appendChild(grammarDiv);
         sentenceDiv.appendChild(buttonGroup);
         
         container.appendChild(sentenceDiv);
@@ -845,6 +1018,7 @@
           const translation = sentence.querySelector('.translation');
           const hintTranslation = sentence.querySelector('.hint-translation');
           const explanation = sentence.querySelector('.explanation-box');
+          const grammar = sentence.querySelector('.grammar-box');
           
           // 切换完整翻译显示状态
           translation.classList.toggle('translation-visible');
@@ -861,6 +1035,12 @@
             sentence.querySelector('.explanation-btn').textContent = '解析';
           }
           
+          // 如果语法结构是显示的，则隐藏它
+          if (grammar.classList.contains('visible')) {
+            grammar.classList.remove('visible');
+            sentence.querySelector('.grammar-btn').textContent = '语法结构';
+          }
+          
           this.textContent = translation.classList.contains('translation-visible') ? '隐藏翻译' : '完整翻译';
         });
       });
@@ -872,6 +1052,7 @@
           const translation = sentence.querySelector('.translation');
           const hintTranslation = sentence.querySelector('.hint-translation');
           const explanation = sentence.querySelector('.explanation-box');
+          const grammar = sentence.querySelector('.grammar-box');
           
           // 切换提示翻译显示状态
           hintTranslation.classList.toggle('translation-visible');
@@ -888,6 +1069,12 @@
             sentence.querySelector('.explanation-btn').textContent = '解析';
           }
           
+          // 如果语法结构是显示的，则隐藏它
+          if (grammar.classList.contains('visible')) {
+            grammar.classList.remove('visible');
+            sentence.querySelector('.grammar-btn').textContent = '语法结构';
+          }
+          
           this.textContent = hintTranslation.classList.contains('translation-visible') ? '隐藏提示' : '提示翻译';
         });
       });
@@ -899,6 +1086,7 @@
           const translation = sentence.querySelector('.translation');
           const hintTranslation = sentence.querySelector('.hint-translation');
           const explanation = sentence.querySelector('.explanation-box');
+          const grammar = sentence.querySelector('.grammar-box');
           
           // 切换解析显示状态
           explanation.classList.toggle('visible');
@@ -915,7 +1103,47 @@
             sentence.querySelector('.hint-btn').textContent = '提示翻译';
           }
           
+          // 如果语法结构是显示的，则隐藏它
+          if (grammar.classList.contains('visible')) {
+            grammar.classList.remove('visible');
+            sentence.querySelector('.grammar-btn').textContent = '语法结构';
+          }
+          
           this.textContent = explanation.classList.contains('visible') ? '隐藏解析' : '解析';
+        });
+      });
+
+      // 语法结构按钮功能
+      document.querySelectorAll('.grammar-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const sentence = this.closest('.sentence');
+          const translation = sentence.querySelector('.translation');
+          const hintTranslation = sentence.querySelector('.hint-translation');
+          const explanation = sentence.querySelector('.explanation-box');
+          const grammar = sentence.querySelector('.grammar-box');
+          
+          // 切换语法结构显示状态
+          grammar.classList.toggle('visible');
+          
+          // 如果翻译是显示的，则隐藏它
+          if (translation.classList.contains('translation-visible')) {
+            translation.classList.remove('translation-visible');
+            sentence.querySelector('.translate-btn').textContent = '完整翻译';
+          }
+          
+          // 如果提示翻译是显示的，则隐藏它
+          if (hintTranslation.classList.contains('translation-visible')) {
+            hintTranslation.classList.remove('translation-visible');
+            sentence.querySelector('.hint-btn').textContent = '提示翻译';
+          }
+          
+          // 如果解析是显示的，则隐藏它
+          if (explanation.classList.contains('visible')) {
+            explanation.classList.remove('visible');
+            sentence.querySelector('.explanation-btn').textContent = '解析';
+          }
+          
+          this.textContent = grammar.classList.contains('visible') ? '隐藏语法' : '语法结构';
         });
       });
 
@@ -1132,10 +1360,10 @@
     function initMouseHighlight() {
       const cursorHighlight = document.querySelector('.cursor-highlight');
       const cursorArrow = document.querySelector('.cursor-arrow');
-      let currentCursor = 'default'; // 'default', 'highlight', 'arrow'
+      let currentCursor = 'highlight'; // 'default', 'highlight', 'arrow'
       
-      // 初始激活默认按钮
-      document.getElementById('cursor-default').classList.add('active');
+      // 初始激活高亮按钮
+      document.getElementById('cursor-highlight').classList.add('active');
       
       // 更新鼠标指针位置
       document.addEventListener('mousemove', function(e) {
@@ -1158,25 +1386,10 @@
           cursorHighlight.style.top = coords.y + 'px';
           // 在互动元素上降低透明度
           cursorHighlight.style.opacity = isOverInteractive ? '0.3' : '1';
-        } 
-        else if (currentCursor === 'arrow') {
+        } else if (currentCursor === 'arrow') {
           cursorArrow.style.left = coords.x + 'px';
           cursorArrow.style.top = coords.y + 'px';
-          // 箭头始终显示
-          cursorArrow.style.opacity = isOverInteractive ? '0.7' : '1';
-        }
-      });
-      
-      // 点击效果
-      document.addEventListener('mousedown', function() {
-        if (currentCursor === 'highlight') {
-          // 移除放大效果
-        }
-      });
-      
-      document.addEventListener('mouseup', function() {
-        if (currentCursor === 'highlight') {
-          // 移除放大效果
+          cursorArrow.style.display = 'block';
         }
       });
       
@@ -1227,7 +1440,7 @@
       });
       
       // 初始设置
-      setCursorType('default');
+      setCursorType('highlight');
     }
     
     // 显示所有答案
@@ -1252,6 +1465,86 @@
         input.removeAttribute('readonly');
       });
       showFeedback('已隐藏所有答案');
+    });
+
+    // 控制翻译按钮的显示
+    document.querySelector('.toggle-translate-btn').addEventListener('change', function() {
+      if (this.checked) {
+        document.querySelectorAll('.translate-btn').forEach(btn => {
+          btn.classList.remove('hidden');
+        });
+      } else {
+        document.querySelectorAll('.translate-btn').forEach(btn => {
+          btn.classList.add('hidden');
+        });
+      }
+    });
+
+    // 控制提示翻译按钮的显示
+    document.querySelector('.toggle-hint-btn').addEventListener('change', function() {
+      if (this.checked) {
+        document.querySelectorAll('.hint-btn').forEach(btn => {
+          btn.classList.remove('hidden');
+        });
+      } else {
+        document.querySelectorAll('.hint-btn').forEach(btn => {
+          btn.classList.add('hidden');
+        });
+      }
+    });
+
+    // 控制解析按钮的显示
+    document.querySelector('.toggle-explanation-btn').addEventListener('change', function() {
+      if (this.checked) {
+        document.querySelectorAll('.explanation-btn').forEach(btn => {
+          btn.classList.remove('hidden');
+        });
+      } else {
+        document.querySelectorAll('.explanation-btn').forEach(btn => {
+          btn.classList.add('hidden');
+        });
+      }
+    });
+
+    // 控制语法结构按钮的显示
+    document.querySelector('.toggle-grammar-btn').addEventListener('change', function() {
+      if (this.checked) {
+        document.querySelectorAll('.grammar-btn').forEach(btn => {
+          btn.classList.remove('hidden');
+        });
+      } else {
+        document.querySelectorAll('.grammar-btn').forEach(btn => {
+          btn.classList.add('hidden');
+        });
+      }
+    });
+
+    // 控制显示答案按钮的显示
+    document.querySelector('.toggle-show-answer-btn').addEventListener('change', function() {
+      if (this.checked) {
+        document.querySelectorAll('.show-answer-btn').forEach(btn => {
+          btn.classList.remove('hidden');
+        });
+      } else {
+        document.querySelectorAll('.show-answer-btn').forEach(btn => {
+          btn.classList.add('hidden');
+        });
+      }
+    });
+
+    // 控制显示所有单词释义的显示
+    document.querySelector('.toggle-show-all-meanings').addEventListener('change', function() {
+      if (this.checked) {
+        document.querySelectorAll('.word').forEach(word => {
+          word.style.pointerEvents = 'auto';
+        });
+        showFeedback('已启用单词释义显示');
+      } else {
+        document.querySelectorAll('.word').forEach(word => {
+          word.style.pointerEvents = 'none';
+        });
+        showFeedback('已禁用单词释义显示');
+      }
     });
   </script>
 
