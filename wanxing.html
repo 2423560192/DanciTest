@@ -300,6 +300,21 @@
       border-radius: 8px;
     }
 
+    /* 解析框样式 */
+    .explanation-box {
+      display: none;
+      color: #333;
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #fff3e0;
+      border-radius: 8px;
+      border-left: 4px solid #ff9800;
+    }
+    
+    .explanation-box.visible {
+      display: block;
+    }
+
     .translation-visible {
       display: block !important;
     }
@@ -324,9 +339,8 @@
       margin-top: 15px;
     }
 
-    .translate-btn, .hint-btn {
+    .translate-btn, .hint-btn, .explanation-btn, .show-answer-btn {
       margin-left: 10px;
-      background-color: #4a90e2;
       color: white;
       border: none;
       border-radius: 5px;
@@ -336,23 +350,19 @@
       transition: all 0.3s;
     }
 
-    .hint-btn {
+    .translate-btn {
+      background-color: #4a90e2;
+    }
+
+    .hint-btn, .explanation-btn {
       background-color: #ff9800;
     }
     
     .show-answer-btn {
-      margin-left: 10px;
       background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 8px 15px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s;
     }
 
-    .translate-btn:hover, .hint-btn:hover, .show-answer-btn:hover {
+    .translate-btn:hover, .hint-btn:hover, .explanation-btn:hover, .show-answer-btn:hover {
       opacity: 0.9;
       transform: scale(1.05);
     }
@@ -526,6 +536,8 @@
     <button id="show-all-translations">显示所有翻译</button>
     <button id="hide-all-translations">隐藏所有翻译</button>
     <button id="show-all-hints">显示所有提示翻译</button>
+    <button id="show-all-explanations">显示所有解析</button>
+    <button id="hide-all-explanations">隐藏所有解析</button>
     <button id="enable-word-hints">启用单词提示</button>
     <button id="disable-word-hints">禁用单词提示</button>
     <button id="show-all-answers">显示所有答案</button>
@@ -554,6 +566,7 @@
         "english": "One day, I [found] a wallet on the ground. {I} picked it up and looked {around}.",
         "translation": "有一天，我在地上捡到了一个钱包。我捡起它，看了看周围。",
         "hint_translation": "有一天，我[f___]到了一个钱包。{我}捡起它，看了看{周围}。",
+        "explanation": "这个句子描述过去发生的事情，需要用动词的过去式。find的过去式是found，表示\"找到/发现\"，符合句子语境：在地上偶然发现了一个钱包。",
         "words": [
           { "word": "found", "meaning": "找到", "isBlank": true, "answer": "found" },
           { "word": "I", "meaning": "我", "isBlank": false },
@@ -565,6 +578,7 @@
         "english": "{I} decided to [return] it to the {police station}.",
         "translation": "我决定把它交给警察局。",
         "hint_translation": "{我}决定把它[r___]到{警察局}。",
+        "explanation": "句子表示\"我决定把钱包归还到警察局\"，需要用动词原形return(归还)。此处decided to后接动词原形，表示决定做某事。",
         "words": [
           { "word": "I", "meaning": "我", "isBlank": false },
           { "word": "return", "meaning": "归还", "isBlank": true, "answer": "return" },
@@ -576,6 +590,7 @@
         "english": "The {police} officer was very {grateful} and [praised] me.",
         "translation": "警察非常感激并称赞了我。",
         "hint_translation": "{警察}非常{感激的}并[p___]了我。",
+        "explanation": "句子描述过去发生的事情，需要用动词的过去式。praise的过去式是praised，表示\"称赞\"，符合情境：警察因为我归还钱包而称赞我。",
         "words": [
           { "word": "police", "meaning": "警察", "isBlank": false },
           { "word": "grateful", "meaning": "感激的", "isBlank": false },
@@ -587,6 +602,7 @@
         "english": "{It} made me feel [proud] of myself.",
         "translation": "这让我感到很自豪。",
         "hint_translation": "{它}让我感到很[p___]。",
+        "explanation": "feel后需要形容词作为补语，描述感受。proud是形容词，表示\"自豪的\"，符合情境：因为做了好事而感到自豪。",
         "words": [
           { "word": "It", "meaning": "它", "isBlank": false },
           { "word": "proud", "meaning": "自豪的", "isBlank": true, "answer": "proud" }
@@ -734,12 +750,18 @@
         
         hintTranslationDiv.innerHTML = hintHtml;
         
+        // 添加解析框
+        const explanationDiv = document.createElement('div');
+        explanationDiv.className = 'explanation-box';
+        explanationDiv.innerHTML = exercise.explanation || '暂无解析';
+        
         // 添加按钮
         const buttonGroup = document.createElement('div');
         buttonGroup.className = 'button-group';
         buttonGroup.innerHTML = `
           <button class="hint-btn">提示翻译</button>
           <button class="translate-btn">完整翻译</button>
+          <button class="explanation-btn">解析</button>
           <button class="show-answer-btn">显示答案</button>
         `;
         
@@ -747,6 +769,7 @@
         sentenceDiv.innerHTML = englishHtml;
         sentenceDiv.appendChild(translationDiv);
         sentenceDiv.appendChild(hintTranslationDiv);
+        sentenceDiv.appendChild(explanationDiv);
         sentenceDiv.appendChild(buttonGroup);
         
         container.appendChild(sentenceDiv);
@@ -821,6 +844,7 @@
           const sentence = this.closest('.sentence');
           const translation = sentence.querySelector('.translation');
           const hintTranslation = sentence.querySelector('.hint-translation');
+          const explanation = sentence.querySelector('.explanation-box');
           
           // 切换完整翻译显示状态
           translation.classList.toggle('translation-visible');
@@ -829,6 +853,12 @@
           if (hintTranslation.classList.contains('translation-visible')) {
             hintTranslation.classList.remove('translation-visible');
             sentence.querySelector('.hint-btn').textContent = '提示翻译';
+          }
+          
+          // 如果解析是显示的，则隐藏它
+          if (explanation.classList.contains('visible')) {
+            explanation.classList.remove('visible');
+            sentence.querySelector('.explanation-btn').textContent = '解析';
           }
           
           this.textContent = translation.classList.contains('translation-visible') ? '隐藏翻译' : '完整翻译';
@@ -841,6 +871,7 @@
           const sentence = this.closest('.sentence');
           const translation = sentence.querySelector('.translation');
           const hintTranslation = sentence.querySelector('.hint-translation');
+          const explanation = sentence.querySelector('.explanation-box');
           
           // 切换提示翻译显示状态
           hintTranslation.classList.toggle('translation-visible');
@@ -851,7 +882,40 @@
             sentence.querySelector('.translate-btn').textContent = '完整翻译';
           }
           
+          // 如果解析是显示的，则隐藏它
+          if (explanation.classList.contains('visible')) {
+            explanation.classList.remove('visible');
+            sentence.querySelector('.explanation-btn').textContent = '解析';
+          }
+          
           this.textContent = hintTranslation.classList.contains('translation-visible') ? '隐藏提示' : '提示翻译';
+        });
+      });
+      
+      // 解析按钮功能
+      document.querySelectorAll('.explanation-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const sentence = this.closest('.sentence');
+          const translation = sentence.querySelector('.translation');
+          const hintTranslation = sentence.querySelector('.hint-translation');
+          const explanation = sentence.querySelector('.explanation-box');
+          
+          // 切换解析显示状态
+          explanation.classList.toggle('visible');
+          
+          // 如果翻译是显示的，则隐藏它
+          if (translation.classList.contains('translation-visible')) {
+            translation.classList.remove('translation-visible');
+            sentence.querySelector('.translate-btn').textContent = '完整翻译';
+          }
+          
+          // 如果提示翻译是显示的，则隐藏它
+          if (hintTranslation.classList.contains('translation-visible')) {
+            hintTranslation.classList.remove('translation-visible');
+            sentence.querySelector('.hint-btn').textContent = '提示翻译';
+          }
+          
+          this.textContent = explanation.classList.contains('visible') ? '隐藏解析' : '解析';
         });
       });
 
@@ -918,12 +982,19 @@
       document.querySelectorAll('.hint-translation').forEach(hint => {
         hint.classList.remove('translation-visible');
       });
+      document.querySelectorAll('.explanation-box').forEach(explanation => {
+        explanation.classList.remove('visible');
+      });
       document.querySelectorAll('.translate-btn').forEach(btn => {
         btn.textContent = '完整翻译';
       });
       document.querySelectorAll('.hint-btn').forEach(btn => {
         btn.textContent = '提示翻译';
       });
+      document.querySelectorAll('.explanation-btn').forEach(btn => {
+        btn.textContent = '解析';
+      });
+      showFeedback('已隐藏所有翻译和解析');
     });
     
     // 显示所有提示翻译
@@ -934,12 +1005,53 @@
       document.querySelectorAll('.translation').forEach(translation => {
         translation.classList.remove('translation-visible');
       });
+      document.querySelectorAll('.explanation-box').forEach(explanation => {
+        explanation.classList.remove('visible');
+      });
       document.querySelectorAll('.hint-btn').forEach(btn => {
         btn.textContent = '隐藏提示';
       });
       document.querySelectorAll('.translate-btn').forEach(btn => {
         btn.textContent = '完整翻译';
       });
+      document.querySelectorAll('.explanation-btn').forEach(btn => {
+        btn.textContent = '解析';
+      });
+      showFeedback('已显示所有提示翻译');
+    });
+
+    // 显示所有解析
+    document.getElementById('show-all-explanations').addEventListener('click', function() {
+      document.querySelectorAll('.explanation-box').forEach(explanation => {
+        explanation.classList.add('visible');
+      });
+      document.querySelectorAll('.translation').forEach(translation => {
+        translation.classList.remove('translation-visible');
+      });
+      document.querySelectorAll('.hint-translation').forEach(hint => {
+        hint.classList.remove('translation-visible');
+      });
+      document.querySelectorAll('.explanation-btn').forEach(btn => {
+        btn.textContent = '隐藏解析';
+      });
+      document.querySelectorAll('.translate-btn').forEach(btn => {
+        btn.textContent = '完整翻译';
+      });
+      document.querySelectorAll('.hint-btn').forEach(btn => {
+        btn.textContent = '提示翻译';
+      });
+      showFeedback('已显示所有解析');
+    });
+    
+    // 隐藏所有解析
+    document.getElementById('hide-all-explanations').addEventListener('click', function() {
+      document.querySelectorAll('.explanation-box').forEach(explanation => {
+        explanation.classList.remove('visible');
+      });
+      document.querySelectorAll('.explanation-btn').forEach(btn => {
+        btn.textContent = '解析';
+      });
+      showFeedback('已隐藏所有解析');
     });
 
     // 启用单词提示
